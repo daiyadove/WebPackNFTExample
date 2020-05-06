@@ -1,16 +1,30 @@
 import initARJS from './initAR'
 
-const addDefaultObject = (scene, onRenderFcts) => {
-  // add a torus knot
-  const cubeGeometry = new THREE.CubeGeometry(100, 100, 100)
-  const cubeMaterial = new THREE.MeshNormalMaterial({
-    transparent: true,
-    opacity: 0.5,
-    side: THREE.DoubleSide
+const addFlamingoObject = (scene, onRenderFcts) => {
+  const root = new THREE.Object3D()
+  scene.add(root)
+  /**
+   * add an object in the scene
+   */
+  const threeGLTFLoader = new THREE.GLTFLoader()
+
+  threeGLTFLoader.load('resources/Flamingo.glb', (gltf) => {
+    const model = gltf.scene.children[0]
+    model.name = 'Flamingo'
+
+    const animation = gltf.animations[0]
+    const mixer = new THREE.AnimationMixer(model)
+    onRenderFcts.push(mixer)
+    const action = mixer.clipAction(animation)
+    action.play()
+
+    root.matrixAutoUpdate = false
+    root.add(model)
+
+    model.position.z = -200
+    model.position.x = 100
+    model.position.y = 100
   })
-  const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial)
-  cubeMesh.position.y = cubeGeometry.parameters.height / 2
-  scene.add(cubeMesh)
 }
 
 const init = () => {
@@ -45,7 +59,7 @@ const init = () => {
   scene.add(light)
 
   const smoothedRoot = initARJS(scene, camera, onRenderFcts, renderer)
-  addDefaultObject(smoothedRoot, onRenderFcts)
+  addFlamingoObject(smoothedRoot, onRenderFcts)
   onRenderFcts.push(() => renderer.render(scene, camera))
 
   const animate = () => {
