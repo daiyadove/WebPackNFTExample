@@ -1,5 +1,7 @@
 import initARJS from './initAR'
 
+const clock = new THREE.Clock()
+
 const addFlamingoObject = (scene, onRenderFcts) => {
   const root = new THREE.Object3D()
   scene.add(root)
@@ -7,14 +9,22 @@ const addFlamingoObject = (scene, onRenderFcts) => {
    * add an object in the scene
    */
   const threeGLTFLoader = new THREE.GLTFLoader()
-
+  const mixers = []
   threeGLTFLoader.load('resources/Flamingo.glb', (gltf) => {
     const model = gltf.scene.children[0]
     model.name = 'Flamingo'
 
     const animation = gltf.animations[0]
     const mixer = new THREE.AnimationMixer(model)
-    onRenderFcts.push(mixer)
+    mixers.push(mixer)
+    onRenderFcts.push(() => {
+      if (mixers.length > 0) {
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < mixers.length; i++) {
+          mixers[i].update(clock.getDelta())
+        }
+      }
+    })
     const action = mixer.clipAction(animation)
     action.play()
 
@@ -34,7 +44,6 @@ const init = () => {
     precision: 'mediump',
   })
 
-  const clock = new THREE.Clock()
 
   const onRenderFcts = []
 
