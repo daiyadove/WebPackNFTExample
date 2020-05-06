@@ -1,5 +1,5 @@
-# ant-w-boiler
-Ar-Nft-Three-Webpack-Boiler-Plate
+# NFTのExampleをWebpackでやってみた
+iOSだけFlamingoが表示されない
 
 ## install
 
